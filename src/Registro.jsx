@@ -1,8 +1,11 @@
+// ✅ src/auth/Registro.jsx
+
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const Registro = () => {
   const [email, setEmail] = useState("");
@@ -10,31 +13,55 @@ const Registro = () => {
 
   const registrarse = async (e) => {
     e.preventDefault();
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          rol: "cliente", // 👈 asignamos el rol al registrarse
+        },
+      },
     });
 
     if (error) {
-      alert("Error al registrarse: " + error.message);
+      toast.error("Error al registrarse");
     } else {
-      alert("¡Revisa tu email para confirmar el registro!");
+      toast.success("¡Registro exitoso! Revisa tu email.");
     }
   };
 
   return (
-    <form onSubmit={registrarse} className="space-y-4 max-w-sm mx-auto mt-10">
-      <h2 className="text-xl font-semibold text-center">Registro</h2>
+    <form
+      onSubmit={registrarse}
+      className="w-full max-w-sm mx-auto mt-20 space-y-6 bg-white p-6 rounded-xl shadow-md"
+    >
+      <h2 className="text-2xl font-bold text-center">Registrarse</h2>
+
       <div>
         <Label>Email</Label>
-        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <Input
+          type="email"
+          placeholder="ejemplo@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
       </div>
+
       <div>
         <Label>Contraseña</Label>
-        <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <Input
+          type="password"
+          placeholder="Mínimo 6 caracteres"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
       </div>
+
       <Button type="submit" className="w-full">
-        Registrarse
+        Crear cuenta
       </Button>
     </form>
   );
